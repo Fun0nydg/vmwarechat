@@ -11,9 +11,9 @@ import (
 
 func main() {
 	ip := flag.String("ip", "", "")
-	port := flag.Uint("p", 50001, "")
-	strport := fmt.Sprint(*port)
+	port := flag.Uint("p", 8001, "")
 	flag.Parse()
+	strport := fmt.Sprint(*port)
 	fmt.Printf("now we connect to server:%s", *ip+":"+strport)
 	conn, err := net.Dial("tcp", *ip+":"+strport)
 	fmt.Println("\nplease input your msg,enter Q is quit:")
