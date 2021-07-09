@@ -7,7 +7,7 @@ import (
 
 func main() {
 	ip := flag.String("ip", "", "")
-	port := flag.Int("p", 80, "")
+	port := flag.Int("p", 8000, "")
 	fmt.Println("start")
 	flag.Parse()
 	fmt.Println(*ip, *port)
