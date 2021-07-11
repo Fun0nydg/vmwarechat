@@ -11,10 +11,11 @@ import (
 
 func main() {
 	//设置参数
-	ip := flag.String("ip", "127.0.0.1", "input ip address")
-	port := flag.Uint("p", 50001, "port")
-	strport := fmt.Sprint(*port)
+	ip := flag.String("ip", "10.0.0.1", "input ip address")
+	port := flag.Uint("p", 80, "port")
 	flag.Parse()
+	strport := fmt.Sprint(*port)
+	fmt.Println(*ip, strport)
 	fmt.Printf("now we connect to server:%s", *ip+":"+strport)
 	conn, err := net.Dial("tcp", *ip+":"+strport)
 	defer conn.Close()
@@ -42,7 +43,7 @@ func main() {
 			fmt.Println("quit")
 			break
 		}
-		conn.Write([]byte(trimname + "|" + triminput))
+		conn.Write([]byte(trimname + "|---|" + triminput))
 	}
 }
 
