@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+	//设置参数
 	ip := flag.String("ip", "127.0.0.1", "input ip address")
 	port := flag.Uint("p", 50001, "port")
 	strport := fmt.Sprint(*port)
@@ -21,35 +22,37 @@ func main() {
 	fmt.Println("\ninput your name:")
 	name, _ := inputRd.ReadString('\n')
 	trimname := strings.Trim(name, "\n")
-	fmt.Println(trimname)
-	conn.Write([]byte("name" + "|" + trimname))
+	fmt.Println("the name is :", trimname, "end")
+	// conn.Write([]byte(trimname))
+	go clientread(conn)
 	fmt.Println("\nplease input your msg,enter Q is quit:")
 
 	if err != nil {
 		fmt.Printf("connect error msg:%s", err.Error())
 	}
-	go clientread(conn)
 
 	for {
 		input, err := inputRd.ReadString('\n')
 		if err != nil {
 			fmt.Println("error:", err.Error())
-			return
+			break
 		}
 		triminput := strings.Trim(input, "\n")
 		if triminput == "Q" {
 			fmt.Println("quit")
-			return
+			break
 		}
-		conn.Write([]byte("say" + "|" + trimname + "|" + triminput))
+		conn.Write([]byte(trimname + "|" + triminput))
 	}
 }
 
 func clientread(conn net.Conn) {
-	data := make([]byte, 512)
-	redata, err := conn.Read(data)
-	if redata == 0 || err != nil {
-		return
+	for {
+		data := make([]byte, 512)
+		redata, err := conn.Read(data)
+		if redata == 0 || err != nil {
+			break
+		}
+		fmt.Println(string(data[:redata]))
 	}
-	fmt.Println(string(data[:redata]))
 }

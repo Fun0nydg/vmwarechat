@@ -34,25 +34,15 @@ func doServerStuff(conn net.Conn) {
 			return //终止程序
 		}
 		msg_str := strings.Split(string(buf[:len]), "|")
-		switch msg_str[0] {
-		case "name":
-			for k, v := range connmap {
-				if k != msg_str[1] {
-					v.Write([]byte("[" + msg_str[1] + "]:" + "join"))
-				}
+		connmap[msg_str[0]] = conn
+		for k, v := range connmap {
+			fmt.Println(k, v)
+			if k != msg_str[0] {
+				v.Write([]byte("[" + msg_str[0] + "]:" + msg_str[1]))
 			}
-			connmap[msg_str[1]] = conn
-		case "say":
-			for k, v := range connmap {
-				if k != msg_str[1] {
-					v.Write([]byte("[" + msg_str[1] + "]:" + msg_str[2]))
-				}
-			}
-
 		}
 
 		fmt.Println(msg_str)
-		// conn.Write([]byte)
 
 	}
 }
