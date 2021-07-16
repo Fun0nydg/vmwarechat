@@ -12,7 +12,7 @@ var connmap map[string]net.Conn = make(map[string]net.Conn)
 
 func main() {
 	fmt.Println("start the server")
-	listener, err := net.Listen("tcp", "127.0.0.1:8000")
+	listener, err := net.Listen("tcp", "0.0.0.0:8000")
 	if err != nil {
 		fmt.Printf("error listen:%s", err.Error())
 	}
@@ -40,8 +40,8 @@ func doServerStuff(conn net.Conn) {
 		fmt.Println(msg_str[1][:4])
 		connmap[msg_str[0]] = conn
 		fmt.Println(msg_str[0])
-		switch msg_str[1][:4] {
-		case "post":
+		switch msg_str[1][:5] {
+		case "post ":
 			for k, v := range connmap {
 				if k != msg_str[0] {
 					fmt.Println(k, v)
@@ -49,7 +49,7 @@ func doServerStuff(conn net.Conn) {
 				}
 			}
 			break
-		case "file":
+		case "file ":
 			fmt.Println("the file case in")
 			buf := make([]byte, 4096)
 			fmt.Println("start receive filename")
