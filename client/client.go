@@ -44,6 +44,10 @@ func main() {
 	fmt.Println("\ninput your name:")
 	name, _ := inputRd.ReadString('\n')
 	trimname := strings.Trim(name, "\n")
+	if len(trimname) != 3 {
+		fmt.Println("name length error,please input 3 length name,eg:aa1")
+		return
+	}
 	fmt.Println("the name is :", trimname, "end")
 	go clientread(conn)
 	fmt.Println("\nplease input your msg,enter Q is quit:")
@@ -58,34 +62,44 @@ func main() {
 			break
 		}
 		triminput := strings.Trim(input, "\n")
-		caseinput := triminput[:4]
-		fmt.Println(caseinput)
+		if len(triminput) <= 5 {
+			fmt.Println("input error,try again,example: post 123 or file 123.txt")
+			continue
+		}
+		caseinput := triminput[:5]
+		if caseinput != "post " && caseinput != "file " {
+			fmt.Println("error,please input post msg or file file.txt")
+			continue
+		}
+		// fmt.Println(caseinput)
 		switch caseinput {
-		case "post":
+		case "post ":
 			conn.Write([]byte(trimname + "|---|" + triminput))
 			// clientread(conn)
 			fmt.Println("post end")
-		case "quit":
+		case "quit ":
 			break
-		case "file":
-			conn.Write([]byte(trimname + "|---|" + triminput)) //1
-			time.Sleep(1 * time.Second)
+		case "file ":
+
 			filepath := triminput[5:]
-			fmt.Println(filepath)
+			// fmt.Println(filepath)
 			fileinfo, err := os.Stat(filepath)
 			if err != nil {
 				fmt.Println("the error is :", err.Error())
 				break
 			}
-			filename := fileinfo.Name()
-			fmt.Println("start send filename")
-			conn.Write([]byte(filename)) //2
+			conn.Write([]byte(trimname + "|---|" + triminput)) //1
 			time.Sleep(1 * time.Second)
+			filename := fileinfo.Name()
+			// fmt.Println("start send filename")
+
 			if err != nil {
 				fmt.Println("the error is", err.Error())
 				break
 			}
-			fmt.Println("111")
+			conn.Write([]byte(filename)) //2
+			time.Sleep(1 * time.Second)
+			// fmt.Println("111")
 
 			// buf := make([]byte, 512)
 			// res, err := conn.Read(buf)
@@ -106,7 +120,7 @@ func main() {
 			fmt.Println("quit")
 			break
 		}
-		fmt.Println("switch end")
+		// fmt.Println("switch end")
 
 	}
 }
