@@ -24,12 +24,12 @@ client连接，ip参数指定地址，p参数指定端口：
 #### 1.发消息
 格式：  
 post xxxx  
-按回车将会发送消息给其他客户端，如果有两个客户端以上，必须每个客户端先进行一次post，这样才能互发消息  
+按回车将会发送消息给其他客户端，如果有两个客户端及以上，必须每个客户端先进行一次post进行初始化，这样才能互发消息  
 
 #### 2.传文件
 格式：  
 file 1.txt  
-按回车将会传文件给server，文件必须在client目录下。  
+按回车将会传文件给server，文件必须在client所在的当前目录。  
 
 ### 参考
 - https://github.com/OctopusLian/Golang-OnlineChatRoom/tree/master/OnetoMoreChatRoom_V2
