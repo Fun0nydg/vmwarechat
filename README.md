@@ -9,7 +9,7 @@
 ```bash
 CGO_ENABLED=0 go build -v -a -ldflags '-s -w' -gcflags="all=-trimpath=${PWD}" -asmflags="all=-trimpath=${PWD}" -o ./server server.go
 ```
-同理编译client
+同理编译client，不想编译的同学可以在release中下载。
 ## 运行
 编译好了之后运行server,默认监听8000端口:
 ```bash
