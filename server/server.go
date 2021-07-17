@@ -68,7 +68,7 @@ func doServerStuff(conn net.Conn) {
 			file, err := os.Create(filename)
 			for {
 				fmt.Println("start receive file")
-				buf := make([]byte, 4096)
+				buf := make([]byte, 200000)
 				len, err := conn.Read(buf)
 				fmt.Println(string(buf[:len]))
 				if string(buf[:len]) == "finish" {
