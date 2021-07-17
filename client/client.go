@@ -11,19 +11,20 @@ import (
 	"time"
 )
 
-func sendfile(conn net.Conn, filepath string) {
+func sendfile(conn net.Conn, filepath string, filesize int64) {
 	fmt.Println("sendfile")
 	file, err := os.Open(filepath)
 	if err != nil {
 		fmt.Println("the error is :", err.Error())
 	}
-	buf := make([]byte, 4096)
+	fmt.Println("the file size is:", filesize)
+	buf := make([]byte, 100000)
 	for {
 		fmt.Println("client statrt to send")
 		send, err := file.Read(buf)
 		if err != nil && err == io.EOF {
 			fmt.Println("the file is transform complete!")
-			time.Sleep(1 * time.Second)
+			time.Sleep(3 * time.Second)
 			conn.Write([]byte("finish")) //4
 			break
 		}
@@ -43,7 +44,9 @@ func main() {
 	inputRd := bufio.NewReader(os.Stdin)
 	fmt.Println("\ninput your name:")
 	name, _ := inputRd.ReadString('\n')
-	trimname := strings.Trim(name, "\n")
+	name = strings.Replace(name, "\r", "", -1)
+	name = strings.Replace(name, "\n", "", -1)
+	trimname := name
 	if len(trimname) != 3 {
 		fmt.Println("name length error,please input 3 length name,eg:aa1")
 		return
@@ -61,7 +64,10 @@ func main() {
 			fmt.Println("error:", err.Error())
 			break
 		}
-		triminput := strings.Trim(input, "\n")
+		// triminput := strings.Trim(input, "\n")
+		input = strings.Replace(input, "\r", "", -1)
+		input = strings.Replace(input, "\n", "", -1)
+		triminput := input
 		if len(triminput) <= 5 {
 			fmt.Println("input error,try again,example: post 123 or file 123.txt")
 			continue
@@ -84,6 +90,7 @@ func main() {
 			filepath := triminput[5:]
 			// fmt.Println(filepath)
 			fileinfo, err := os.Stat(filepath)
+			filesize := fileinfo.Size()
 			if err != nil {
 				fmt.Println("the error is :", err.Error())
 				break
@@ -108,7 +115,7 @@ func main() {
 				fmt.Println(err.Error())
 				break
 			}
-			sendfile(conn, filename)
+			sendfile(conn, filename, filesize)
 			// if string(buf[:res]) == "ok" {
 			// 	fmt.Println("start send")
 			// 	sendfile(conn, filename)
