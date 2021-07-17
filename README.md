@@ -1,7 +1,7 @@
 # simplechat
 ## 介绍
 由于vmtools实在很难用，虚拟机和物理机之间复制文本和传文件很麻烦，于是就写一个简单的小工具，可以互发消息、传文件。   
-首先运行server，之后运行client，这样client之间可以互相发消息。
+首先运行server，之后运行client，这样client之间可以互相发消息。欢迎提交issus，我会不断完善！！！  
 
 ## 编译
 需要go环境  
