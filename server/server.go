@@ -50,7 +50,7 @@ func doServerStuff(conn net.Conn) {
 			}
 			break
 		case "file ":
-			fmt.Println("the file case in")
+			// fmt.Println("the file case in")
 			buf := make([]byte, 4096)
 			fmt.Println("start receive filename")
 			len, err := conn.Read(buf) //2
@@ -82,11 +82,11 @@ func doServerStuff(conn net.Conn) {
 				file.Write(buf[:len])
 			}
 			defer file.Close()
-			fmt.Println("jump for")
+			// fmt.Println("jump for")
 			break
 		}
 
 		defer conn.Close()
-		fmt.Println(msg_str)
+		// fmt.Println(msg_str)
 	}
 }
