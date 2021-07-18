@@ -30,7 +30,7 @@ post xxxx
 #### 2.传文件
 格式：  
 file 1.txt  
-按回车将会传文件给server，文件必须在client所在的当前目录。  
+按回车将会传文件给server，**文件必须在client所在的当前目录。**  
 
 ## 参考
 - https://github.com/OctopusLian/Golang-OnlineChatRoom/tree/master/OnetoMoreChatRoom_V2
