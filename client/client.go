@@ -90,11 +90,12 @@ func main() {
 			filepath := triminput[5:]
 			// fmt.Println(filepath)
 			fileinfo, err := os.Stat(filepath)
-			filesize := fileinfo.Size()
 			if err != nil {
 				fmt.Println("the error is :", err.Error())
 				break
 			}
+			filesize := fileinfo.Size()
+
 			conn.Write([]byte(trimname + "|---|" + triminput)) //1
 			time.Sleep(1 * time.Second)
 			filename := fileinfo.Name()
