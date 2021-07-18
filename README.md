@@ -13,18 +13,19 @@ CGO_ENABLED=0 go build -v -a -ldflags '-s -w' -gcflags="all=-trimpath=${PWD}" -a
 ## 运行
 编译好了之后运行server,默认监听8000端口:
 ```bash
-./server
+server.exe
 ```
 client和server必须端口互通，注意下物理机和虚拟机的防火墙  
 client连接，ip参数指定地址，p参数指定端口：
 ```bash
-./client -ip 10.0.0.1 -p 8000
+client.exe -ip 10.0.0.1 -p 8000
 ```
 先输入用户名（3位）之后回车，开始选择模式：
 #### 1.发消息
+
 格式：  
 post xxxx  
-按回车将会发送消息给其他客户端，如果有两个客户端及以上，必须每个客户端先进行一次post进行初始化，这样才能互发消息  
+按回车将会发送消息给其他客户端,如果有两个client想要互相接收消息，**每个client必须先post一次消息才能互相接收到**  
 
 #### 2.传文件
 格式：  
