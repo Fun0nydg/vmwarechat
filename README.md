@@ -15,7 +15,7 @@ CGO_ENABLED=0 go build -v -a -ldflags '-s -w' -gcflags="all=-trimpath=${PWD}" -a
 ```bash
 server.exe
 ```
-client和server必须端口互通，注意下物理机和虚拟机的防火墙  
+client和server必须端口互通，**注意下物理机和虚拟机的防火墙**  
 client连接，ip参数指定地址，p参数指定端口：
 ```bash
 client.exe -ip 10.0.0.1 -p 8000
