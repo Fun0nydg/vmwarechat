@@ -10,28 +10,28 @@
 CGO_ENABLED=0 go build -v -a -ldflags '-s -w' -gcflags="all=-trimpath=${PWD}" -asmflags="all=-trimpath=${PWD}" -o ./server server.go
 ```
 同理编译client，不想编译的同学可以在releases中下载。
-## 运行
+## 使用
 物理机运行一个server和一个client，虚拟机运行一个client  
-编译好了之后运行server,默认监听8000端口:
+运行server,默认监听8000端口:
 ```bash
 server.exe
 ```
 client和server必须端口互通，**注意下物理机和虚拟机的防火墙**  
-client连接，ip参数指定地址，p参数指定端口：
+client连接参数：ip参数指定地址，p参数指定端口：
 ```bash
 client.exe -ip 10.0.0.1 -p 8000
 ```
-先输入用户名（3位）之后回车，开始选择模式：
+先输入**用户名（3位）** 之后回车，开始选择模式：
 #### 1.发消息
 
 格式：  
 post xxxx  
-按回车将会发送消息给其他客户端,如果有两个client想要互相接收消息，**每个client必须先post一次消息才能互相接收到**  
+按回车将会发送xxxx给server,如果有两个client,那么server会转发消息给client，**每个client必须先post一次消息才能接收到别的client的消息**  
 
 #### 2.传文件
 格式：  
 file 1.txt  
-按回车将会传文件给server，**文件必须在client所在的当前目录。**  
+按回车将会传文件给server，**文件必须在client所在的当前目录，直接输入文件名，暂不支持路径文件名格式**  
 
 ## 参考
 - https://github.com/OctopusLian/Golang-OnlineChatRoom/tree/master/OnetoMoreChatRoom_V2
