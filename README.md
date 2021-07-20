@@ -11,6 +11,7 @@ CGO_ENABLED=0 go build -v -a -ldflags '-s -w' -gcflags="all=-trimpath=${PWD}" -a
 ```
 同理编译client，不想编译的同学可以在releases中下载。
 ## 运行
+物理机运行一个server和一个client，虚拟机运行一个client  
 编译好了之后运行server,默认监听8000端口:
 ```bash
 server.exe
