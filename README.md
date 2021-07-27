@@ -33,6 +33,10 @@ post xxxx
 file 1.txt  
 按回车将会传文件给server，**文件必须在client所在的当前目录，直接输入文件名，暂不支持路径文件名格式**  
 
+## 问题
+### 1.client连接成功，无法互发消息？
+请确认server和client的cmd是否卡住，如果卡住，请多次按回车。    
+
 ## 参考
 - https://github.com/OctopusLian/Golang-OnlineChatRoom/tree/master/OnetoMoreChatRoom_V2
 - https://www.cnblogs.com/yang-2018/p/11147418.html
