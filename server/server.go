@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"io"
+	"log"
 	"net"
 	"os"
 	"strings"
@@ -9,6 +11,14 @@ import (
 )
 
 var connmap map[string]net.Conn = make(map[string]net.Conn)
+
+func sendfile(conn net.Conn, file *os.File) {
+	fmt.Println("Start send file to client")
+	_, err := io.Copy(conn, file)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
 
 func main() {
 	fmt.Println("start the server")
@@ -23,23 +33,23 @@ func main() {
 			fmt.Printf("the error is :%s", err.Error())
 			return
 		}
+		fmt.Println(conn.RemoteAddr(), "connect successed")
 		go doServerStuff(conn)
 	}
 }
 func doServerStuff(conn net.Conn) {
 	for {
-		fmt.Println("start doServerStuff")
+		fmt.Println("start service")
 		buf := make([]byte, 512)
-		len, err := conn.Read(buf) //1
+		len, err := conn.Read(buf) //1 conn
 		if err != nil {
 			fmt.Println("Error reading", err.Error())
 			return //终止程序
 		}
-
+		// fmt.Println(string(buf[:len]))
 		msg_str := strings.Split(string(buf[:len]), "|---|")
-		fmt.Println(msg_str[1][:4])
+		// fmt.Println(msg_str)
 		connmap[msg_str[0]] = conn
-		fmt.Println(msg_str[0])
 		switch msg_str[1][:5] {
 		case "post ":
 			for k, v := range connmap {
@@ -50,43 +60,48 @@ func doServerStuff(conn net.Conn) {
 			}
 			break
 		case "file ":
-			// fmt.Println("the file case in")
-			buf := make([]byte, 4096)
-			fmt.Println("start receive filename")
-			len, err := conn.Read(buf) //2
+			fmt.Println("server start receive file")
+			serverftp, err := net.Listen("tcp", "0.0.0.0:8001")
 			if err != nil {
-				fmt.Println("the error is:", err.Error())
+				fmt.Println(err)
+			}
+			conn1, err := serverftp.Accept()
+			if err != nil {
+				fmt.Println(err)
+			}
+			filename := msg_str[1][5:]
+			fmt.Println("receive filename:", filename)
+			file, err := os.Create(filename)
+			_, err = io.Copy(file, conn1)
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println("the file is receive complete")
+			file.Close()
+			serverftp.Close()
+			break
+		case "down ":
+			fmt.Println("down case in")
+			conn2, err := net.DialTimeout("tcp", conn.RemoteAddr().String(), 5*time.Second)
+			if err != nil {
+				fmt.Println(err)
 				break
 			}
-			filename := string(buf[:len])
-			fmt.Println("the filename is :", filename)
-			if filename != "" {
-				fmt.Println("start send ok")
-				// conn.Write([]byte("ok"))
-				time.Sleep(1 * time.Second)
+			filename := msg_str[1][5:]
+			file, err := os.Open(filename)
+			if err != nil {
+				fmt.Println(err)
+				conn2.Write([]byte("fail"))
+				break
 			}
-			file, err := os.Create(filename)
-			for {
-				fmt.Println("start receive file")
-				buf := make([]byte, 200000)
-				len, err := conn.Read(buf)
-				fmt.Println(string(buf[:len]))
-				if string(buf[:len]) == "finish" {
-					fmt.Println("the file is receive complete")
-					break
-				}
-				if err != nil {
-					fmt.Println("the error is:", err.Error())
-					break
-				}
-				file.Write(buf[:len])
-			}
-			defer file.Close()
-			// fmt.Println("jump for")
+			fmt.Println("start send file:", filename)
+			conn2.Write([]byte("success"))
+			time.Sleep(1 * time.Second)
+			sendfile(conn2, file)
+			fmt.Println("end down case")
+			file.Close()
+			conn2.Close()
 			break
 		}
-
-		defer conn.Close()
-		// fmt.Println(msg_str)
 	}
 }

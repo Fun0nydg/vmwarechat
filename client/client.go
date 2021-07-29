@@ -11,25 +11,14 @@ import (
 	"time"
 )
 
-func sendfile(conn net.Conn, filepath string, filesize int64) {
-	fmt.Println("sendfile")
-	file, err := os.Open(filepath)
+func sendfile(conn1 net.Conn, filename string) {
+	fmt.Println("start sendfile")
+	file, err := os.Open(filename)
 	if err != nil {
 		fmt.Println("the error is :", err.Error())
 	}
-	fmt.Println("the file size is:", filesize)
-	buf := make([]byte, 100000)
-	for {
-		fmt.Println("client statrt to send")
-		send, err := file.Read(buf)
-		if err != nil && err == io.EOF {
-			fmt.Println("the file is transform complete!")
-			time.Sleep(3 * time.Second)
-			conn.Write([]byte("finish")) //4
-			break
-		}
-		conn.Write(buf[:send]) //3
-	}
+	_, err = io.Copy(conn1, file)
+	file.Close()
 }
 func main() {
 	//设置参数
@@ -53,18 +42,18 @@ func main() {
 	}
 	fmt.Println("the name is :", trimname, "end")
 	go clientread(conn)
-	fmt.Println("\nplease input your msg,enter Q is quit:")
+	fmt.Println("\nplease input your msg,eg:post xxxx or file filename.txt")
 	if err != nil {
 		fmt.Printf("connect error msg:%s", err.Error())
 	}
 
 	for {
+		fmt.Println("choose the method")
 		input, err := inputRd.ReadString('\n')
 		if err != nil {
 			fmt.Println("error:", err.Error())
 			break
 		}
-		// triminput := strings.Trim(input, "\n")
 		input = strings.Replace(input, "\r", "", -1)
 		input = strings.Replace(input, "\n", "", -1)
 		triminput := input
@@ -73,63 +62,71 @@ func main() {
 			continue
 		}
 		caseinput := triminput[:5]
-		if caseinput != "post " && caseinput != "file " {
+		if caseinput != "post " && caseinput != "file " && caseinput != "down " {
 			fmt.Println("error,please input post msg or file file.txt")
 			continue
 		}
-		// fmt.Println(caseinput)
 		switch caseinput {
 		case "post ":
 			conn.Write([]byte(trimname + "|---|" + triminput))
-			// clientread(conn)
 			fmt.Println("post end")
 		case "quit ":
 			break
 		case "file ":
-
+			fmt.Println("case file")
 			filepath := triminput[5:]
-			// fmt.Println(filepath)
 			fileinfo, err := os.Stat(filepath)
 			if err != nil {
-				fmt.Println("the error is :", err.Error())
+				fmt.Println(err)
 				break
 			}
-			filesize := fileinfo.Size()
-
-			conn.Write([]byte(trimname + "|---|" + triminput)) //1
+			conn.Write([]byte(trimname + "|---|" + triminput)) //1 conn
 			time.Sleep(1 * time.Second)
 			filename := fileinfo.Name()
-			// fmt.Println("start send filename")
-
+			fmt.Println("the filename is:", filename)
+			conn1, err := net.DialTimeout("tcp", *ip+":8001", 5*time.Second)
 			if err != nil {
-				fmt.Println("the error is", err.Error())
+				fmt.Println(err)
+			}
+			sendfile(conn1, filepath)
+			conn1.Close()
+			break
+		case "down ":
+			fmt.Println("down case in")
+			conn.Write([]byte(trimname + "|---|" + triminput))
+			serverrec, err := net.Listen("tcp", conn.LocalAddr().String())
+			if err != nil {
+				fmt.Println(err)
+			}
+			conn2, err := serverrec.Accept()
+			filename := triminput[5:]
+			file, err := os.Create(filename)
+			if err != nil {
+				fmt.Println(err)
+			}
+			buf := make([]byte, 512)
+			len, err := conn2.Read(buf)
+			fmt.Println(string(buf[:len]))
+			if string(buf[:len]) == "fail" {
+				fmt.Println("the file doesn't exist")
+				serverrec.Close()
 				break
 			}
-			conn.Write([]byte(filename)) //2
-			time.Sleep(1 * time.Second)
-			// fmt.Println("111")
 
-			// buf := make([]byte, 512)
-			// res, err := conn.Read(buf)
-			// fmt.Println("receive", string(buf[:res]))
+			fmt.Println("receive filename:", filename)
+			_, err = io.Copy(file, conn2)
 			if err != nil {
-				fmt.Println(err.Error())
-				break
+				fmt.Println(err)
 			}
-			sendfile(conn, filename, filesize)
-			// if string(buf[:res]) == "ok" {
-			// 	fmt.Println("start send")
-			// 	sendfile(conn, filename)
-			// 	break
-			// }
-
+			file.Close()
+			serverrec.Close()
+			fmt.Println("end down case")
+			break
 		}
 		if triminput == "Q" {
 			fmt.Println("quit")
 			break
 		}
-		// fmt.Println("switch end")
-
 	}
 }
 
