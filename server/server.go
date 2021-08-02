@@ -82,7 +82,10 @@ func doServerStuff(conn net.Conn) {
 			break
 		case "down ":
 			fmt.Println("down case in")
-			conn2, err := net.DialTimeout("tcp", conn.RemoteAddr().String(), 5*time.Second)
+			down_msg := strings.Split(conn.RemoteAddr().String(), ":")
+			down_address := down_msg[0]
+			fmt.Println(down_address)
+			conn2, err := net.DialTimeout("tcp", down_address+":8002", 5*time.Second)
 			if err != nil {
 				fmt.Println(err)
 				break

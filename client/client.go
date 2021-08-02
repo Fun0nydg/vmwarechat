@@ -94,7 +94,7 @@ func main() {
 		case "down ":
 			fmt.Println("down case in")
 			conn.Write([]byte(trimname + "|---|" + triminput))
-			serverrec, err := net.Listen("tcp", conn.LocalAddr().String())
+			serverrec, err := net.Listen("tcp", "0.0.0.0:8002")
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -112,7 +112,6 @@ func main() {
 				serverrec.Close()
 				break
 			}
-
 			fmt.Println("receive filename:", filename)
 			_, err = io.Copy(file, conn2)
 			if err != nil {
